@@ -1,0 +1,11 @@
+name: 'AWS S3 Deploy'
+description: 'Deploy to AWS S3 bucket'
+author: 'Lukas Deutz <lukas.deutz@wirecard.com>'
+
+branding:
+  icon: 'upload-cloud'
+  color: 'yellow'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
