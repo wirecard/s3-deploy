@@ -1,10 +1,39 @@
 name: 'AWS S3 Deploy'
 description: 'Deploy to AWS S3 bucket'
-author: 'Lukas Deutz <lukas.deutz@wirecard.com>'
 
 branding:
   icon: 'upload-cloud'
   color: 'yellow'
+
+inputs:
+  AWS_ACCESS_KEY_ID:
+    description: 'AWS access key ID'
+    required: true
+    default: null
+  AWS_SECRET_ACCESS_KEY:
+    description: 'AWS secret access key'
+    required: true
+    default: null
+  AWS_REGION:
+    description: 'AWS S3 bucket region'
+    required: true
+    default: null
+  AWS_S3_BUCKET:
+    description: 'AWS S3 bucket name'
+    required: true
+    default: null
+  SRC_DIR:
+    description: 'Source dir (default: .)'
+    required: false
+    default: '.'
+  DST_DIR:
+    description: 'Destination dir (default: /)'
+    required: false
+    default: '/'
+  SKIP_CLEANUP:
+    description: 'Skip cleanup'
+    required: false
+    default: false
 
 runs:
   using: 'docker'
