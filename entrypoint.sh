@@ -39,3 +39,5 @@ _run() {
     _configure
     _deploy
 }
+
+_run
