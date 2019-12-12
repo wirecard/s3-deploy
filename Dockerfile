@@ -8,7 +8,8 @@ LABEL com.github.actions.description="Deploy to AWS S3 bucket"
 LABEL com.github.actions.icon="upload-cloud"
 LABEL com.github.actions.color="yellow"
 
-RUN pip3 install awscli
+RUN apk add --no-cache bash
+RUN pip install awscli
 
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
