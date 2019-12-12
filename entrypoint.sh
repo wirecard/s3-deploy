@@ -2,33 +2,34 @@
 
 _error() {
     echo "::error file=entrypoint.sh::$1"
-    ERRORS=true
+}
+
+_sanity_checks() {
+    local REQUIRED_ENV="AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION AWS_S3_BUCKET"
+    local RETVAL=0
+    for R in ${REQUIRED_ENV}; do
+        local _v=INPUT_${R}
+        if [[ -z ${!_v} ]]; then
+            echo "Environment variable ${R} missing"
+            ((RETVAL++))
+        fi
+    done
+    return ${RETVAL}
 }
 
 _pre() {
-    if [[ -z ${INPUT_AWS_ACCESS_KEY_ID} ]]; then
-        _error "AWS_ACCESS_KEY_ID not provided."
-    fi
-    if [[ -z ${INPUT_AWS_SECRET_ACCESS_KEY} ]]; then
-        _error "AWS_SECRET_ACCESS_KEY not provided."
-    fi
-    if [[ -z ${INPUT_AWS_REGION} ]]; then
-        _error "AWS_REGION not provided."
-    fi
-    if [[ -z ${INPUT_AWS_S3_BUCKET} ]]; then
-        _error "AWS_S3_BUCKET not provided."
-    fi
-    if [[ ${ERRORS} == "true" ]]; then
-        echo "Aborting deployment"
+	_sanity_checks
+    if [[ $? -gt 0 ]]; then
+        echo "Sanity Checks failed. Aborting deployment."
         exit 1
     fi
 }
 
 _configure() {
     aws configure --profile s3-deploy-action <<-EOF > /dev/null 2>&1
-${AWS_ACCESS_KEY_ID}
-${AWS_SECRET_ACCESS_KEY}
-${AWS_REGION}
+${INPUT_AWS_ACCESS_KEY_ID}
+${INPUT_AWS_SECRET_ACCESS_KEY}
+${INPUT_AWS_REGION}
 text
 EOF
 }
