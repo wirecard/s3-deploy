@@ -1,7 +1,12 @@
 #!/bin/bash
 
 _error() {
-    echo "::error file=entrypoint.sh::$1"
+    echo "::error file=entrypoint.sh::${1}"
+}
+
+_abort_with_error() {
+    _error ${1}
+    exit 1
 }
 
 _sanity_checks() {
@@ -10,7 +15,7 @@ _sanity_checks() {
     for R in ${REQUIRED_ENV}; do
         local _v=INPUT_${R}
         if [[ -z ${!_v} ]]; then
-            echo "Environment variable ${R} missing"
+            _error "Environment variable ${R} missing"
             ((RETVAL++))
         fi
     done
@@ -19,10 +24,7 @@ _sanity_checks() {
 
 _pre() {
 	_sanity_checks
-    if [[ $? -gt 0 ]]; then
-        echo "Sanity Checks failed. Aborting deployment."
-        exit 1
-    fi
+    return $?
 }
 
 _configure() {
@@ -32,18 +34,20 @@ ${INPUT_AWS_SECRET_ACCESS_KEY}
 ${INPUT_AWS_REGION}
 text
 EOF
+    return $?
 }
 
 _deploy() {
     aws s3 sync "${INPUT_SRC_DIR:-.}" \
     "s3://${INPUT_AWS_S3_BUCKET}/${INPUT_DST_DIR}" \
     --profile s3-deploy-action
+    return $?
 }
 
 _run() {
-    _pre
-    _configure
-    _deploy
+    _pre       || _abort_with_error "Aborted. Failed in _pre()."
+    _configure || _abort_with_error "Aborted. Failed in _configure()."
+    _deploy    || _abort_with_error "Aborted. Failed in _deploy()."
 }
 
 _run
