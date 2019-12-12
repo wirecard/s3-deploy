@@ -5,7 +5,7 @@ _error() {
 }
 
 _abort_with_error() {
-    _error ${1}
+    _error "${1}"
     exit 1
 }
 
