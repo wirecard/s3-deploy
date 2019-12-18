@@ -33,7 +33,7 @@ inputs:
   SKIP_CLEANUP:
     description: 'Skip cleanup'
     required: false
-    default: false
+    default: null
 
 runs:
   using: 'docker'
